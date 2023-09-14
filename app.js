@@ -453,7 +453,7 @@ window.addEventListener("DOMContentLoaded", () => {
 					.replace(/\s/g, "-")
 					.toLowerCase()}"`
 			: "";
-		text = `<div${IS_STYLED} role="region" tabindex="0">\n<table>${text}</table>\n</div>`;
+		text = `<div${IS_STYLED} role="region" tabindex="0">\n<table>${text}</table>\n<div style="margin-top:8px">Made with <a href="https://www.htmltables.io/">HTML Tables</a></div>\n</div>`;
 
 		if (GENERATE_CSS_CHECKBOX.checked && !COMPACT_MODE_CHECKBOX.checked) {
 			styleTagText += "\n" + text;
