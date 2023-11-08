@@ -950,9 +950,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function convertCsvToArray(csvContent) {
     const rows = csvContent.split("\n");
+
     return rows.map((row) => {
-      // Remove quotes from each value in the row
-      return row.split(",").map((value) => value.replace(/^"(.*)"$/, "$1"));
+      // Use a regular expression to split the row by commas while preserving quoted values
+      const values = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+
+      // Remove surrounding quotes from each value
+      if (values) {
+        return values.map((value) => value.replace(/^"(.*)"$/, "$1"));
+      } else {
+        return [];
+      }
     });
   }
 
