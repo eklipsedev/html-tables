@@ -1561,9 +1561,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     STRIPES_CHECKBOX.checked = false;
     STRIPES_CHECKBOX.dispatchEvent(new Event("change"));
-    STRIPES_CHECKBOX.previousElementSibling.classList.toggle(
-      "w--redirected-checked"
-    );
+
+    if (settings.stripes) {
+      STRIPES_CHECKBOX.previousElementSibling.classList.add(
+        "w--redirected-checked"
+      );
+    } else {
+      STRIPES_CHECKBOX.previousElementSibling.classList.remove(
+        "w--redirected-checked"
+      );
+    }
 
     if (settings.autosave) {
       updateTableCodeInLocalStorage();
