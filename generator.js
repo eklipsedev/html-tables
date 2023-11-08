@@ -1418,7 +1418,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if ("generateCSS" in tableSettings) {
       settings.generateCSS = tableSettings.generateCSS;
     } else {
-      settings.generateCSS = false;
+      settings.generateCSS = true;
     }
 
     if ("minifyCode" in tableSettings) {
