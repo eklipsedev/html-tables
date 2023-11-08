@@ -91,7 +91,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const CODE_RESULTS_TEXTAREA = D.getElementById("code");
 
   const NEW_TABLE_BUTTON = D.querySelector("[data-setting='new-table']");
-  const RESET_TABLE_BUTTON = D.querySelector("[data-setting='reset']");
+  const RESET_TABLE_BUTTON = D.querySelector("[data-setting='clear-table']");
+  const CLEAR_FORMATTING_BUTTON = D.querySelector(
+    "[data-setting='clear-formatting']"
+  );
+  const RESET_STYLES_BUTTON = D.querySelector("[data-setting='reset-styles']");
   const DOWNLOAD_CSV_BUTTON = D.querySelector("[data-setting='download-csv']");
   const UPLOAD_CSV_BUTTON = D.querySelector("[data-setting='upload-csv']");
   const AUTOSAVE_BUTTON = D.querySelector("[data-setting='autosave']");
@@ -1013,8 +1017,14 @@ document.addEventListener("DOMContentLoaded", () => {
           ? "Autosave enabled"
           : "Autosave disabled";
         break;
-      case "reset":
-        messageText = "Table cleared";
+      case "clear-data":
+        messageText = "Table data cleared";
+        break;
+      case "clear-formatting":
+        messageText = "Table formatting cleared";
+        break;
+      case "reset-styles":
+        messageText = "Table styles reset";
         break;
       case "upload-csv":
         messageText = file
@@ -1142,6 +1152,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   STRIPES_CHECKBOX.addEventListener("change", () => {
     settings.stripes = STRIPES_CHECKBOX.checked;
+    console.log(settings.stripes);
     if (settings.stripes) {
       STRIPE_STYLES_ROW.style.display = "flex";
       SETTINGS_COMPONENT.classList.add("is-stripes");
@@ -1149,6 +1160,7 @@ document.addEventListener("DOMContentLoaded", () => {
       STRIPE_STYLES_ROW.style.display = "none";
       SETTINGS_COMPONENT.classList.remove("is-stripes");
     }
+
     updateCode();
     updateSettingsInLocalStorage("stripes");
   });
@@ -1162,7 +1174,7 @@ document.addEventListener("DOMContentLoaded", () => {
       tableCaption = "Table 1";
       CAPTION_ELEMENT.textContent = tableCaption;
     }
-    deliverMessage("reset");
+    deliverMessage("clear-data");
   });
 
   DOWNLOAD_CSV_BUTTON.addEventListener("click", () => {
@@ -1521,12 +1533,55 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function clearTableFormatting() {
+    const tableHtml = TABLE_TARGET.innerHTML;
+    // pattern to clean formatting
+    const pattern = /<(?!\/?(table|caption|tr|td|th)\b)[^>]+>/gi;
+    // Remove unwanted HTML tags using regular expressions
+    const cleanHtml = tableHtml.replace(pattern, "");
+
+    tableCode = cleanHtml;
+    buildTableFromCode(tableCode);
+  }
+
+  CLEAR_FORMATTING_BUTTON.addEventListener("click", () => {
+    clearTableFormatting();
+    updateCode();
+
+    if (settings.autosave) {
+      updateTableCodeInLocalStorage();
+    }
+    deliverMessage("clear-formatting");
+  });
+
+  RESET_STYLES_BUTTON.addEventListener("click", (e) => {
+    setStylePanelStyles(defaultStyles);
+    tableStyles = defaultStyles;
+    updateCode();
+
+    STRIPES_CHECKBOX.checked = false;
+    STRIPES_CHECKBOX.dispatchEvent(new Event("change"));
+    STRIPES_CHECKBOX.previousElementSibling.classList.toggle(
+      "w--redirected-checked"
+    );
+
+    if (settings.autosave) {
+      updateTableCodeInLocalStorage();
+      updateStylesInLocalStorage(e);
+    }
+    deliverMessage("reset-styles");
+  });
+
   NEW_TABLE_BUTTON.addEventListener("click", (e) => {
     tableCaption = "Table 1";
     buildTableFromCode();
     setStylePanelStyles(defaultStyles);
     tableStyles = defaultStyles;
     updateCode();
+    // handle stripes change
+    settings.stripes = false;
+    STRIPES_CHECKBOX.dispatchEvent(new Event("change"));
+
     if (settings.autosave) {
       updateTableCodeInLocalStorage();
       updateStylesInLocalStorage(e);
